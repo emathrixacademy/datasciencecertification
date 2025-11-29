@@ -385,43 +385,53 @@ def display_table(df, table_id, title, color):
     with st.expander(f"📊 Quick Statistics for {title}"):
         st.dataframe(df.describe(), use_container_width=True)
     
-    # Display table
-    html = df.to_html(index=False, table_id=table_id, border=1, na_rep='NULL')
+    # Display using Streamlit's native dataframe with proper table ID in HTML
+    st.markdown(f"**Table ID for scraping:** `{table_id}`")
     
-    st.markdown(f"""
+    # Create scrollable container with the table
+    html_table = f"""
     <style>
-    #{table_id} {{
-        border-collapse: collapse;
-        width: 100%;
-        margin: 20px 0;
-        font-size: 13px;
-        font-family: 'Courier New', monospace;
-    }}
-    #{table_id} th {{
-        background-color: {color};
-        color: white;
-        padding: 10px;
-        text-align: left;
-        position: sticky;
-        top: 0;
-        font-weight: bold;
-    }}
-    #{table_id} td {{
-        border: 1px solid #ddd;
-        padding: 6px;
-    }}
-    #{table_id} tr:nth-child(even) {{
-        background-color: #f9f9f9;
-    }}
-    #{table_id} tr:hover {{
-        background-color: #e8f4f8;
-        transition: background-color 0.2s;
-    }}
+        .table-container-{table_id} {{
+            max-height: 500px;
+            overflow-y: auto;
+            border: 2px solid {color};
+            border-radius: 5px;
+            margin: 10px 0;
+        }}
+        #{table_id} {{
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 13px;
+            font-family: Arial, sans-serif;
+        }}
+        #{table_id} th {{
+            background-color: {color};
+            color: white;
+            padding: 10px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }}
+        #{table_id} td {{
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }}
+        #{table_id} tr:nth-child(even) {{
+            background-color: #f9f9f9;
+        }}
+        #{table_id} tr:hover {{
+            background-color: #e8f4f8;
+        }}
     </style>
-    <div style="max-height: 500px; overflow-y: auto; border: 2px solid {color}; border-radius: 5px;">
-    {html}
+    <div class="table-container-{table_id}">
+        {df.to_html(index=False, table_id=table_id, border=1, na_rep='NULL', escape=False)}
     </div>
-    """, unsafe_allow_html=True)
+    """
+    
+    st.markdown(html_table, unsafe_allow_html=True)
 
 # ============================================================================
 # MAIN APP
